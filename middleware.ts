@@ -21,7 +21,7 @@ import { Context } from "https://deno.land/x/oak/mod.ts";
  */
 export async function logger(
   ctx: Context<Record<string, any>>,
-  next: () => Promise<void>,
+  next: () => Promise<unknown>,
 ) {
   // waits for the complete execution of the request
   await next();
@@ -43,7 +43,7 @@ export async function logger(
 
 export async function responseTime(
   ctx: Context<Record<string, any>>,
-  next: () => Promise<void>,
+  next: () => Promise<unknown>,
 ) {
   const start = Date.now();
   await next();
