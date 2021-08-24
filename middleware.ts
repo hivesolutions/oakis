@@ -47,6 +47,6 @@ export async function responseTime(
 ) {
   const start = Date.now();
   await next();
-  const ms = Date.now() - start;
-  ctx.response.headers.set("x-response-time", `${ms}ms`);
+  const duration = Date.now() - start;
+  ctx.response.headers.set("x-response-time", `${duration}ms`);
 }
