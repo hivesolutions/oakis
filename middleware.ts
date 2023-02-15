@@ -3,19 +3,21 @@ import { bold, cyan, red, yellow } from "https://deno.land/std/fmt/colors.ts";
 import { Context } from "https://deno.land/x/oak/mod.ts";
 
 /**
- * The logger method that can be used to display information about
- * the HTTP request that has been received.
+ * The logger middleware function that can be used to display
+ * information about the HTTP request that has been received.
  *
  * ```ts
  * const app = new Application();
  * app.use(logger());
  * ```
  *
- * @param responseHeader The name of the header where the response
- * time is going to be set.
+ * @param options The options to be used in the parametrization
+ * of the logger middleware.
  * @returns The middleware function to be used in the logging process.
  */
-export function logger(responseHeader = "x-response-time") {
+export function logger(
+  { responseHeader } = { responseHeader: "x-response-time" },
+) {
   return async (
     // deno-lint-ignore no-explicit-any
     ctx: Context<Record<string, any>>,
@@ -40,7 +42,7 @@ export function logger(responseHeader = "x-response-time") {
   };
 }
 
-export function responseTime(header = "x-response-time") {
+export function responseTime({ header } = { header: "x-response-time" }) {
   return async (
     // deno-lint-ignore no-explicit-any
     ctx: Context<Record<string, any>>,
@@ -56,7 +58,9 @@ export function responseTime(header = "x-response-time") {
   };
 }
 
-export function handleError(code = 500, message = "Server Error") {
+export function handleError(
+  { code, message } = { code: 500, message: "Server Error" },
+) {
   return async (
     // deno-lint-ignore no-explicit-any
     ctx: Context<Record<string, any>>,
@@ -78,7 +82,9 @@ export function handleError(code = 500, message = "Server Error") {
   };
 }
 
-export function handleNotFound(code = 404, message = "Not found") {
+export function handleNotFound(
+  { code, message } = { code: 404, message: "Not Found" },
+) {
   // deno-lint-ignore no-explicit-any
   return (ctx: Context<Record<string, any>>) => {
     ctx.response.status = code;
