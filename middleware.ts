@@ -16,7 +16,9 @@ import { Context } from "https://deno.land/x/oak/mod.ts";
  * @returns The middleware function to be used in the logging process.
  */
 export function logger(
-  { responseHeader } = { responseHeader: "x-response-time" },
+  { responseHeader = "x-response-time" } = {
+    responseHeader: "x-response-time",
+  },
 ) {
   return async (
     // deno-lint-ignore no-explicit-any
@@ -42,7 +44,9 @@ export function logger(
   };
 }
 
-export function responseTime({ header } = { header: "x-response-time" }) {
+export function responseTime(
+  { header = "x-response-time" } = { header: "x-response-time" },
+) {
   return async (
     // deno-lint-ignore no-explicit-any
     ctx: Context<Record<string, any>>,
@@ -59,7 +63,10 @@ export function responseTime({ header } = { header: "x-response-time" }) {
 }
 
 export function handleError(
-  { code, message } = { code: 500, message: "Server Error" },
+  { code = 500, message = "Server Error" } = {
+    code: 500,
+    message: "Server Error",
+  },
 ) {
   return async (
     // deno-lint-ignore no-explicit-any
@@ -83,7 +90,7 @@ export function handleError(
 }
 
 export function handleNotFound(
-  { code, message } = { code: 404, message: "Not Found" },
+  { code = 404, message = "Not Found" } = { code: 404, message: "Not Found" },
 ) {
   // deno-lint-ignore no-explicit-any
   return (ctx: Context<Record<string, any>>) => {
