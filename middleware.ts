@@ -1,9 +1,4 @@
-import {
-  cyan,
-  bold,
-  yellow,
-  red,
-} from "https://deno.land/std/fmt/colors.ts";
+import { bold, cyan, red, yellow } from "https://deno.land/std/fmt/colors.ts";
 
 import { Context } from "https://deno.land/x/oak/mod.ts";
 
@@ -20,6 +15,7 @@ import { Context } from "https://deno.land/x/oak/mod.ts";
  * @param next The next element to be used in the middleware.
  */
 export async function logger(
+  // deno-lint-ignore no-explicit-any
   ctx: Context<Record<string, any>>,
   next: () => Promise<unknown>,
 ) {
@@ -42,11 +38,46 @@ export async function logger(
 }
 
 export async function responseTime(
+  // deno-lint-ignore no-explicit-any
   ctx: Context<Record<string, any>>,
   next: () => Promise<unknown>,
 ) {
   const start = Date.now();
-  await next();
-  const duration = Date.now() - start;
-  ctx.response.headers.set("x-response-time", `${duration}ms`);
+  try {
+    await next();
+  } finally {
+    const duration = Date.now() - start;
+    ctx.response.headers.set("x-response-time", `${duration}ms`);
+  }
+}
+
+export function handleError(code = 500, message = "Server Error") {
+  return async (
+    // deno-lint-ignore no-explicit-any
+    ctx: Context<Record<string, any>>,
+    next: () => Promise<unknown>,
+  ) => {
+    try {
+      await next();
+    } catch (err) {
+      if (err.code && typeof err.code === "number") {
+        code = err.code;
+      }
+      if (err.message && typeof err.message === "string") {
+        message = err.message;
+      }
+      ctx.response.status = code;
+      ctx.response.body = { code: code, error: message };
+      ctx.response.type = "json";
+    }
+  };
+}
+
+export function handleNotFound(code = 404, message = "Not found") {
+  // deno-lint-ignore no-explicit-any
+  return (ctx: Context<Record<string, any>>) => {
+    ctx.response.status = code;
+    ctx.response.body = { code: code, error: message };
+    ctx.response.type = "json";
+  };
 }

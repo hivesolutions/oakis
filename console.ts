@@ -1,6 +1,6 @@
 import { bold, yellow } from "https://deno.land/std/fmt/colors.ts";
 
-export async function logServerStart(
+export function logServerStart(
   hostname: string | undefined,
   port: number | undefined,
 ) {
