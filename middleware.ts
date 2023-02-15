@@ -8,47 +8,52 @@ import { Context } from "https://deno.land/x/oak/mod.ts";
  *
  * ```ts
  * const app = new Application();
- * app.use(logger);
+ * app.use(logger());
  * ```
  *
- * @param ctx The context of the current execution.
- * @param next The next element to be used in the middleware.
+ * @param responseHeader The name of the header where the response
+ * time is going to be set.
+ * @returns The middleware function to be used in the logging process.
  */
-export async function logger(
-  // deno-lint-ignore no-explicit-any
-  ctx: Context<Record<string, any>>,
-  next: () => Promise<unknown>,
-) {
-  // waits for the complete execution of the request
-  await next();
+export function logger(responseHeader = "x-response-time") {
+  return async (
+    // deno-lint-ignore no-explicit-any
+    ctx: Context<Record<string, any>>,
+    next: () => Promise<unknown>,
+  ) => {
+    // waits for the complete execution of the request
+    await next();
 
-  // gets the response time of the current request, by gathering
-  // the response time header (quick hack)
-  const responseTime = ctx.response.headers.get("x-response-time");
+    // gets the response time of the current request, by gathering
+    // the response time header (quick hack)
+    const responseTime = ctx.response.headers.get(responseHeader);
 
-  // logs the request using the current information, notice that colors
-  // are used to better illustrate the request
-  console.log(
-    `${red(ctx.request.method)} ${cyan(ctx.request.url.pathname)} - ${
-      yellow(bold(
-        String(responseTime),
-      ))
-    }`,
-  );
+    // logs the request using the current information, notice that colors
+    // are used to better illustrate the request
+    console.log(
+      `${red(ctx.request.method)} ${cyan(ctx.request.url.pathname)} - ${
+        yellow(bold(
+          String(responseTime),
+        ))
+      }`,
+    );
+  };
 }
 
-export async function responseTime(
-  // deno-lint-ignore no-explicit-any
-  ctx: Context<Record<string, any>>,
-  next: () => Promise<unknown>,
-) {
-  const start = Date.now();
-  try {
-    await next();
-  } finally {
-    const duration = Date.now() - start;
-    ctx.response.headers.set("x-response-time", `${duration}ms`);
-  }
+export function responseTime(header = "x-response-time") {
+  return async (
+    // deno-lint-ignore no-explicit-any
+    ctx: Context<Record<string, any>>,
+    next: () => Promise<unknown>,
+  ) => {
+    const start = Date.now();
+    try {
+      await next();
+    } finally {
+      const duration = Date.now() - start;
+      ctx.response.headers.set(header, `${duration}ms`);
+    }
+  };
 }
 
 export function handleError(code = 500, message = "Server Error") {
