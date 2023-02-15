@@ -31,7 +31,7 @@ export function logger(responseHeader = "x-response-time") {
     // logs the request using the current information, notice that colors
     // are used to better illustrate the request
     console.log(
-      `${red(ctx.request.method)} ${cyan(ctx.request.url.pathname)}${ctx.response.type ? " (" + red(ctx.response.type) + ")" : " "} - ${
+      `${red(ctx.request.method)} ${cyan(ctx.request.url.pathname)} - ${
         yellow(bold(
           String(responseTime),
         ))
