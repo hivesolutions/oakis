@@ -92,9 +92,14 @@ export function responseTime(
 }
 
 export function handleError(
-    { code = 500, message = "Server Error" } = {
+    { code = 500, message = "Server Error", stacktrace = undefined }: {
+        code?: number;
+        message?: string;
+        stacktrace?: boolean;
+    } = {
         code: 500,
         message: "Server Error",
+        stacktrace: undefined,
     },
 ) {
     return async (
@@ -105,14 +110,25 @@ export function handleError(
         try {
             await next();
         } catch (err) {
+            stacktrace = stacktrace ?? runMode() === "development";
             if (err.code && typeof err.code === "number") {
                 code = err.code;
             }
             if (err.message && typeof err.message === "string") {
                 message = err.message;
             }
+            const result: { code: number; error: string; stack?: string[] } = {
+                code: code,
+                error: message,
+            };
+            if (stacktrace) {
+                const stack = (err as Error).stack;
+                result.stack = stack
+                    ? stack.split("\n").map((l) => l.trim())
+                    : [];
+            }
             ctx.response.status = code;
-            ctx.response.body = { code: code, error: message };
+            ctx.response.body = result;
             ctx.response.type = "json";
         }
     };
@@ -127,4 +143,8 @@ export function handleNotFound(
         ctx.response.body = { code: code, error: message };
         ctx.response.type = "json";
     };
+}
+
+export function runMode() {
+    return Deno.env.get("APP_ENV") ?? Deno.env.get("NODE_ENV") ?? "development";
 }
