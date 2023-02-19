@@ -92,14 +92,21 @@ export function responseTime(
 }
 
 export function handleError(
-    { code = 500, message = "Server Error", stacktrace = undefined }: {
+    {
+        code = 500,
+        message = "Server Error",
+        stacktrace = undefined,
+        log = true,
+    }: {
         code?: number;
         message?: string;
         stacktrace?: boolean;
+        log?: boolean;
     } = {
         code: 500,
         message: "Server Error",
         stacktrace: undefined,
+        log: true,
     },
 ) {
     return async (
@@ -130,6 +137,9 @@ export function handleError(
             ctx.response.status = code;
             ctx.response.body = result;
             ctx.response.type = "json";
+            if (log) {
+                console.error(err);
+            }
         }
     };
 }
