@@ -1,4 +1,11 @@
-import { bold, cyan, red, yellow } from "https://deno.land/std/fmt/colors.ts";
+import {
+    bold,
+    cyan,
+    green,
+    red,
+    white,
+    yellow,
+} from "https://deno.land/std/fmt/colors.ts";
 
 import { Context } from "https://deno.land/x/oak/mod.ts";
 
@@ -32,6 +39,29 @@ export function logger(
         // the response time header (quick hack)
         const responseTime = ctx.response.headers.get(responseHeader);
 
+        // obtains the status code from the status of the response,
+        // converting it into a string value (for normalization purposes)
+        const statusCode = ctx.response.status.toString();
+
+        // obtains the proper color for logging of the type of
+        // response that is going to be returned
+        let statusColor;
+        switch (Math.floor(Number(statusCode) / 100)) {
+            case 2:
+                statusColor = green;
+                break;
+            case 3:
+                statusColor = yellow;
+                break;
+            case 4:
+            case 5:
+                statusColor = red;
+                break;
+            default:
+                statusColor = white;
+                break;
+        }
+
         // logs the request using the current information, notice that colors
         // are used to better illustrate the request
         console.log(
@@ -39,7 +69,7 @@ export function logger(
                 yellow(bold(
                     String(responseTime),
                 ))
-            }`,
+            } - ${statusColor(statusCode)}`,
         );
     };
 }
