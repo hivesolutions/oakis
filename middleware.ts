@@ -1,12 +1,4 @@
-import {
-    bold,
-    cyan,
-    green,
-    red,
-    white,
-    yellow,
-} from "https://deno.land/std/fmt/colors.ts";
-import { Context } from "https://deno.land/x/oak/mod.ts";
+import { bold, Context, cyan, green, red, white, yellow } from "./deps.ts";
 
 /**
  * The logger middleware function that can be used to display

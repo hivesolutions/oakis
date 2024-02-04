@@ -1,4 +1,4 @@
-import { bold, yellow } from "https://deno.land/std/fmt/colors.ts";
+import { bold, yellow } from "./deps.ts";
 
 export function logServerStart(
     hostname: string | undefined,
